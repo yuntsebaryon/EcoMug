@@ -1,5 +1,3 @@
-
 *.json
 .DS_Store
 *.out
-*.cpp
