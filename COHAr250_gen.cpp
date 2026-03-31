@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     EcoMug gen;
     gen.SetUseSky();
     gen.SetSkySize({{10.0, 10.0}}); // m
-    gen.SetSkyCenterPosition({{0., 0., 2.41}}); // m
+    gen.SetSkyCenterPosition({{0., 0., 6.81}}); // m
 
     double muMass = 0.105658;  // GeV
     int PID = 13;
@@ -53,14 +53,15 @@ int main(int argc, char* argv[]) {
     int JDAHEP1 = 0;
     int JDAHEP2 = 0;
 
-    int nFiles = 120;
+    int startFile = 0;
+    int nFiles = 1200;
     int nEventsPerFile = 100000;
 
-    for ( int iFile = 0; iFile < nFiles; iFile++ ) {
+    for ( int iFile = startFile; iFile < nFiles; iFile++ ) {
 
         std::ostringstream oss;
         oss << "/Users/yuntse/data/coherent/SNeNDSens/gen/Cosmics/" << std::setw(4) << std::setfill('0') 
-            << iFile/10 *10 << "/CosmicFlux_" << std::setw(4) << std::setfill('0') << iFile << ".hepevt";
+            << iFile/100 *100 << "/CosmicFlux_" << std::setw(4) << std::setfill('0') << iFile << ".hepevt";
         std::ofstream outfile(oss.str());
         
         for ( int iEvent = 0; iEvent < nEventsPerFile; iEvent++ ) {
