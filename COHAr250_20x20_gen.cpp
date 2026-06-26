@@ -2,13 +2,13 @@
 // COHAr250_gen.cpp
 ///////////////////////////////////////////
 //  Author : Yun-Tse Tsai
-//  Date   : March 11, 2026
+//  Date   : June 25th, 2026
 //  Version: v0.0
 //  Make a simple code to generate cosmic muons from EcoMug,
 //  Hardcoded everywhere in this first version.
 //
 //  Cosmic rays: Use the EcoMug default, 129Hz/m2
-//  Generate 10x10m2, from -30µs to 202µs
+//  Generate 20x20m2, from -30µs to 202µs
 //  Expect 3 cosmic rays per event, use a Poisson distribution with
 //  the mean value of 3
 //  Output units: GeV, cm, ns
@@ -39,9 +39,41 @@ int rand_poisson(double lambda) {
 // main
 int main(int argc, char* argv[]) {
 
+    int startFile = 0;
+
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <integer>\n";
+        return 1;
+    }
+
+    try {
+        std::string s = argv[1];
+        size_t pos = 0;
+        int value = std::stoi(s, &pos);
+
+        // Ensure entire string was a valid integer (e.g., reject "123abc")
+        if (pos != s.size()) {
+            std::cerr << "Invalid integer: " << s << "\n";
+            return 1;
+        }
+
+        std::cout << "Parsed value = " << value << "\n";
+	startFile = value;
+    }
+    catch (const std::invalid_argument&) {
+        std::cerr << "Not a number: " << argv[1] << "\n";
+        return 1;
+    }
+    catch (const std::out_of_range&) {
+        std::cerr << "Number out of int range: " << argv[1] << "\n";
+        return 1;
+    }
+
+    std::cout << "Starting generation at file " << startFile << "\n";
+
     EcoMug gen;
     gen.SetUseSky();
-    gen.SetSkySize({{10.0, 10.0}}); // m
+    gen.SetSkySize({{20.0, 20.0}}); // m
     gen.SetSkyCenterPosition({{0., 0., 6.81}}); // m
 
     double muMass = 0.105658;  // GeV
@@ -54,20 +86,19 @@ int main(int argc, char* argv[]) {
     int JDAHEP1 = 0;
     int JDAHEP2 = 0;
 
-    int startFile = 0;
-    int nFiles = 1200;
+    int nFiles = 1000;
     int nEventsPerFile = 100000;
 
-    for ( int iFile = startFile; iFile < nFiles; iFile++ ) {
+    for ( int iFile = startFile; iFile < startFile + nFiles; iFile++ ) {
 
         std::ostringstream oss;
-        oss << "/sdf/data/neutrino/yuntse/coherent/SNeNDSens/gen/Cosmics_10x10/" << std::setw(5) << std::setfill('0') 
+        oss << "/sdf/data/neutrino/yuntse/coherent/SNeNDSens/gen/Cosmics_20x20/" << std::setw(5) << std::setfill('0') 
             << iFile/100 *100 << "/CosmicFlux_" << std::setw(5) << std::setfill('0') << iFile << ".hepevt";
         std::ofstream outfile(oss.str());
         
         for ( int iEvent = 0; iEvent < nEventsPerFile; iEvent++ ) {
 
-            int avgnMuons = 3;
+            int avgnMuons = 12;
             int nMuons = rand_poisson( avgnMuons );
 
             for ( int iMuon = 0; iMuon < nMuons; iMuon++ ) {
